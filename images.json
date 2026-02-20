@@ -1,7 +1,3 @@
 {
-  "foto": ["https://i.postimg.cc/abc123/foto1.jpg"],
-  "wall": ["https://i.postimg.cc/def456/wall1.png"],
-  "khiyo": ["https://i.postimg.cc/ghi789/khiyo.jpg"],
-  "angkatan": ["https://i.postimg.cc/jkl321/angkatan.png"],
-  "all": ["https://i.postimg.cc/mno654/all.jpg"]
+  "foto": ["https://i.postimg.cc/abc123/foto1.jpg"]
 }
