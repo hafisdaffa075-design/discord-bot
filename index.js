@@ -55,34 +55,33 @@ client.on("messageCreate", async (message) => {
     const categoryNames = Object.keys(data);
 
     if (categoryNames.length === 0) {
-      return message.reply("❌ Database kategori masih kosong!");
+      return message.reply("❌ Tidak ada kategori di database!");
     }
 
     let totalGambar = 0;
 
-    const kategoriList = categoryNames
+    const kategori = categoryNames
       .map((cat, i) => {
         const jumlah = data[cat].length;
         totalGambar += jumlah;
-        return `> ${i + 1}. **${cat.toUpperCase()}** ・${jumlah} Img ・(!${cat})`;
+        return `\`[${i + 1}]\` 📁 **${cat.toUpperCase()}**\n> 🖼️ ${jumlah} Gambar\n> ⚡ Gunakan : \`!${cat}\`\n`;
       })
       .join("\n");
 
     const embed = new EmbedBuilder()
-      .setTitle("📂 CATEGORY PANEL")
+      .setColor(0x5865f2)
+      .setTitle("📂 LIST KATEGORI BOT")
       .setDescription(
         `
+${kategori}
 ━━━━━━━━━━━━━━━━━━
-${kategoriList}
+📊 **Total Kategori :** ${categoryNames.length}
+🖼️ **Total Gambar   :** ${totalGambar}
 ━━━━━━━━━━━━━━━━━━
-
-📊 Total Kategori : **${categoryNames.length}**
-🖼️ Total Gambar   : **${totalGambar}**
 `,
       )
-      .setColor(0x2b2d31)
       .setFooter({
-        text: `User : ${message.author.username}`,
+        text: `Requested by ${message.author.username}`,
       })
       .setTimestamp();
 
