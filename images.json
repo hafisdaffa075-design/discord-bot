@@ -1,3 +1,12 @@
 {
-  "foto": ["https://i.postimg.cc/abc123/foto1.jpg"]
+  "foto": [
+    {
+      "kode": "img1",
+      "url": "https://i.postimg.cc/abc.jpg"
+    },
+    {
+      "kode": "img2",
+      "url": "https://i.postimg.cc/def.jpg"
+    }
+  ]
 }

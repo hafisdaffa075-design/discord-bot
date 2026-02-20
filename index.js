@@ -96,17 +96,63 @@ ${kategori}
     }
 
     const kategori = args[0];
-    const link = args[1];
+    const kode = args[1];
+    const link = args[2];
 
-    if (!kategori || !link) {
-      return message.reply("Contoh: !add kucing https://link.jpg");
+    if (!kategori || !kode || !link) {
+      return message.reply("Contoh: !add foto img1 https://link.jpg");
     }
 
     if (!data[kategori]) data[kategori] = [];
-    data[kategori].push(link);
+
+    data[kategori].push({
+      kode: kode,
+      url: link,
+    });
+
     saveData(data);
 
-    return message.reply(`Gambar berhasil ditambahkan ke ${kategori}`);
+    return message.reply(
+      `✅ Gambar (${kode}) berhasil ditambahkan ke ${kategori}`,
+    );
+  }
+
+  // ================= REMOVE =================
+  if (command === "remove") {
+    if (
+      !message.member.permissions.has(PermissionsBitField.Flags.Administrator)
+    ) {
+      return message.reply("❌ Khusus Admin!");
+    }
+
+    const kategori = args[0];
+    const kode = args[1];
+
+    if (!kategori || !kode) {
+      return message.reply("Contoh: !remove foto img1");
+    }
+
+    if (!data[kategori]) {
+      return message.reply("❌ Kategori tidak ditemukan!");
+    }
+
+    const index = data[kategori].findIndex((g) => g.kode === kode);
+
+    if (index === -1) {
+      return message.reply("❌ Kode gambar tidak ditemukan!");
+    }
+
+    data[kategori].splice(index, 1);
+
+    if (data[kategori].length === 0) {
+      delete data[kategori];
+    }
+
+    saveData(data);
+
+    return message.reply(
+      `✅ Gambar dengan kode (${kode}) berhasil dihapus dari ${kategori}`,
+    );
   }
 
   // ================= KIRIM GAMBAR =================
@@ -115,7 +161,7 @@ ${kategori}
   }
 
   const randomImage =
-    data[command][Math.floor(Math.random() * data[command].length)];
+    data[command][Math.floor(Math.random() * data[command].length)].url;
 
   const embed = new EmbedBuilder()
     .setTitle(`📸 ${command.toUpperCase()}`)
