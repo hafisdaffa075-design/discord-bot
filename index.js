@@ -52,14 +52,33 @@ client.on("messageCreate", async (message) => {
 
   // ================= LIST =================
   if (command === "list") {
-    const categories = Object.keys(data)
-      .map((c) => `!${c}`)
-      .join("\n");
+    const categoryNames = Object.keys(data);
+
+    if (categoryNames.length === 0) {
+      return message.reply("Belum ada kategori yang tersedia!");
+    }
+
+    let description = "";
+
+    categoryNames.forEach((cat, index) => {
+      const jumlah = data[cat].length;
+      description += `**${index + 1}. !${cat}** ➜ ${jumlah} gambar\n`;
+    });
 
     const embed = new EmbedBuilder()
-      .setTitle("📜 Daftar Kategori")
-      .setDescription(categories)
-      .setColor(0x00aeff);
+      .setTitle("📂 DAFTAR KATEGORI GAMBAR")
+      .setDescription(description)
+      .addFields({
+        name: "📊 Total Kategori",
+        value: `${categoryNames.length} Kategori`,
+        inline: true,
+      })
+      .setColor(0x00aeff)
+      .setFooter({
+        text: `Diminta oleh ${message.author.username}`,
+        iconURL: message.author.displayAvatarURL(),
+      })
+      .setTimestamp();
 
     return message.reply({ embeds: [embed] });
   }
