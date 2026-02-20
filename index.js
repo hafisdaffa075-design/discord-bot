@@ -52,52 +52,42 @@ client.on("messageCreate", async (message) => {
 
   // ================= LIST =================
   if (command === "list") {
-    const loading = await message.reply("🔄 Memuat daftar kategori...");
+    const categoryNames = Object.keys(data);
 
-    setTimeout(async () => {
-      const categoryNames = Object.keys(data);
+    if (categoryNames.length === 0) {
+      return message.reply("❌ Database kategori masih kosong!");
+    }
 
-      if (categoryNames.length === 0) {
-        return loading.edit("❌ Belum ada kategori!");
-      }
+    let totalGambar = 0;
 
-      let totalGambar = 0;
+    const kategoriList = categoryNames
+      .map((cat, i) => {
+        const jumlah = data[cat].length;
+        totalGambar += jumlah;
+        return `> ${i + 1}. **${cat.toUpperCase()}** ・${jumlah} Img ・(!${cat})`;
+      })
+      .join("\n");
 
-      const kategoriUI = categoryNames
-        .map((cat, i) => {
-          const jumlah = data[cat].length;
-          totalGambar += jumlah;
+    const embed = new EmbedBuilder()
+      .setTitle("📂 CATEGORY PANEL")
+      .setDescription(
+        `
+━━━━━━━━━━━━━━━━━━
+${kategoriList}
+━━━━━━━━━━━━━━━━━━
 
-          return `
-╭━━〔 ${i + 1} 〕━━⬣
-┃ 📁  ${cat.toUpperCase()}
-┃ 🖼️  ${jumlah} Gambar
-┃ ⚙️  Cmd : !${cat}
-╰━━━━━━━━━━⬣`;
-        })
-        .join("\n");
-
-      const embed = new EmbedBuilder()
-        .setTitle("✨ DAFTAR KATEGORI BOT ✨")
-        .setDescription(
-          `
-\`\`\`
-${kategoriUI}
-\`\`\`
-📊 Total Kategori : ${categoryNames.length}
-🖼️ Total Gambar   : ${totalGambar}
+📊 Total Kategori : **${categoryNames.length}**
+🖼️ Total Gambar   : **${totalGambar}**
 `,
-        )
-        .setColor(0x5865f2)
-        .setFooter({
-          text: `Requested by ${message.author.username}`,
-        })
-        .setTimestamp();
+      )
+      .setColor(0x2b2d31)
+      .setFooter({
+        text: `User : ${message.author.username}`,
+      })
+      .setTimestamp();
 
-      await loading.edit({ content: "✅ Berhasil dimuat!", embeds: [embed] });
-    }, 1500);
+    return message.reply({ embeds: [embed] });
   }
-
   // ================= ADD =================
   if (command === "add") {
     if (
