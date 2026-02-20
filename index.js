@@ -52,44 +52,50 @@ client.on("messageCreate", async (message) => {
 
   // ================= LIST =================
   if (command === "list") {
-    const categoryNames = Object.keys(data);
+    const loading = await message.reply("🔄 Memuat daftar kategori...");
 
-    if (categoryNames.length === 0) {
-      return message.reply("❌ Belum ada kategori di database!");
-    }
+    setTimeout(async () => {
+      const categoryNames = Object.keys(data);
 
-    let totalGambar = 0;
+      if (categoryNames.length === 0) {
+        return loading.edit("❌ Belum ada kategori!");
+      }
 
-    const listKategori = categoryNames
-      .map((cat, i) => {
-        const jumlah = data[cat].length;
-        totalGambar += jumlah;
-        return `**${i + 1}. ${cat.toUpperCase()}**\n🖼️ ${jumlah} Gambar | 🔎 !${cat}`;
-      })
-      .join("\n\n");
+      let totalGambar = 0;
 
-    const embed = new EmbedBuilder()
-      .setTitle("📂 DAFTAR KATEGORI BOT")
-      .setDescription(listKategori)
-      .addFields(
-        {
-          name: "📊 Total Kategori",
-          value: `${categoryNames.length}`,
-          inline: true,
-        },
-        {
-          name: "🖼️ Total Semua Gambar",
-          value: `${totalGambar}`,
-          inline: true,
-        },
-      )
-      .setColor(0x00aeff)
-      .setFooter({
-        text: `Diminta oleh ${message.author.username}`,
-      })
-      .setTimestamp();
+      const kategoriUI = categoryNames
+        .map((cat, i) => {
+          const jumlah = data[cat].length;
+          totalGambar += jumlah;
 
-    return message.reply({ embeds: [embed] });
+          return `
+╭━━〔 ${i + 1} 〕━━⬣
+┃ 📁  ${cat.toUpperCase()}
+┃ 🖼️  ${jumlah} Gambar
+┃ ⚙️  Cmd : !${cat}
+╰━━━━━━━━━━⬣`;
+        })
+        .join("\n");
+
+      const embed = new EmbedBuilder()
+        .setTitle("✨ DAFTAR KATEGORI BOT ✨")
+        .setDescription(
+          `
+\`\`\`
+${kategoriUI}
+\`\`\`
+📊 Total Kategori : ${categoryNames.length}
+🖼️ Total Gambar   : ${totalGambar}
+`,
+        )
+        .setColor(0x5865f2)
+        .setFooter({
+          text: `Requested by ${message.author.username}`,
+        })
+        .setTimestamp();
+
+      await loading.edit({ content: "✅ Berhasil dimuat!", embeds: [embed] });
+    }, 1500);
   }
 
   // ================= ADD =================
