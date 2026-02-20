@@ -1,7 +1,3 @@
 {
-  "foto": ["https://i.imgur.com/abc123.jpg"],
-  "wall": ["https://i.imgur.com/def456.png"],
-  "khiyo": ["https://i.imgur.com/ghi789.jpg"],
-  "angkatan": ["https://i.imgur.com/jkl321.png"],
-  "all": ["https://i.imgur.com/mno654.jpg"]
+  "foto": ["https://i.imgur.com/abc123.jpg"]
 }
