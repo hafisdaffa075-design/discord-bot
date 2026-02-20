@@ -1,5 +1,13 @@
-const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
+const {
+  Client,
+  GatewayIntentBits,
+  EmbedBuilder,
+  PermissionsBitField,
+} = require("discord.js");
 const fs = require("fs");
+
+const TOKEN = process.env.TOKEN;
+const PREFIX = "!";
 
 const client = new Client({
   intents: [
@@ -9,56 +17,90 @@ const client = new Client({
   ],
 });
 
-const TOKEN = process.env.TOKEN;
+const cooldown = new Set();
 
+// ================= DATABASE =================
+function loadData() {
+  return JSON.parse(fs.readFileSync("./images.json", "utf8"));
+}
+
+function saveData(data) {
+  fs.writeFileSync("./images.json", JSON.stringify(data, null, 2));
+}
+
+// ================= READY =================
 client.once("ready", () => {
   console.log(`Bot aktif sebagai ${client.user.tag}`);
 });
 
+// ================= MESSAGE COMMAND =================
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
-  if (!message.content.startsWith("!")) return;
+  if (!message.content.startsWith(PREFIX)) return;
 
-  const command = message.content.slice(1).toLowerCase();
+  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
 
-  try {
-    const data = JSON.parse(fs.readFileSync("./images.json", "utf8"));
+  const data = loadData();
 
-    // COMMAND LIST
-    if (command === "list") {
-      const commandList = Object.keys(data)
-        .map((cmd) => `!${cmd}`)
-        .join("\n");
+  // Anti Spam Cooldown 5 detik
+  if (cooldown.has(message.author.id)) {
+    return message.reply("Tunggu 5 detik!");
+  }
+  cooldown.add(message.author.id);
+  setTimeout(() => cooldown.delete(message.author.id), 5000);
 
-      const embed = new EmbedBuilder()
-        .setTitle("📜 Daftar Command")
-        .setDescription(commandList)
-        .setColor(0x00aeff);
-
-      return message.channel.send({ embeds: [embed] });
-    }
-
-    // COMMAND GAMBAR
-    if (!data[command]) {
-      return message.reply(
-        "❌ Command tidak ditemukan! Ketik !list untuk melihat daftar.",
-      );
-    }
-
-    const images = data[command];
-    const randomImage = images[Math.floor(Math.random() * images.length)];
+  // ================= LIST =================
+  if (command === "list") {
+    const categories = Object.keys(data)
+      .map((c) => `!${c}`)
+      .join("\n");
 
     const embed = new EmbedBuilder()
-      .setTitle(`📸 Gambar ${command}`)
-      .setImage(randomImage)
-      .setColor(0x00aeff)
-      .setFooter({ text: `Diminta oleh ${message.author.username}` });
+      .setTitle("📜 Daftar Kategori")
+      .setDescription(categories)
+      .setColor(0x00aeff);
 
-    await message.channel.send({ embeds: [embed] });
-  } catch (error) {
-    console.error("Error:", error);
-    message.reply("⚠ Terjadi kesalahan membaca data.");
+    return message.reply({ embeds: [embed] });
   }
+
+  // ================= ADD =================
+  if (command === "add") {
+    if (
+      !message.member.permissions.has(PermissionsBitField.Flags.Administrator)
+    ) {
+      return message.reply("Khusus Admin!");
+    }
+
+    const kategori = args[0];
+    const link = args[1];
+
+    if (!kategori || !link) {
+      return message.reply("Contoh: !add kucing https://link.jpg");
+    }
+
+    if (!data[kategori]) data[kategori] = [];
+    data[kategori].push(link);
+    saveData(data);
+
+    return message.reply(`Gambar berhasil ditambahkan ke ${kategori}`);
+  }
+
+  // ================= KIRIM GAMBAR =================
+  if (!data[command]) {
+    return message.reply("Kategori tidak ditemukan!");
+  }
+
+  const randomImage =
+    data[command][Math.floor(Math.random() * data[command].length)];
+
+  const embed = new EmbedBuilder()
+    .setTitle(`📸 ${command.toUpperCase()}`)
+    .setImage(randomImage)
+    .setColor(0x00aeff)
+    .setFooter({ text: `Diminta oleh ${message.author.username}` });
+
+  message.reply({ embeds: [embed] });
 });
 
 client.login(TOKEN);
