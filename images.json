@@ -1,5 +1,16 @@
 {
-  "g": ["https://imgur.com/GPBzZDj"],
-  "p": ["https://imgur.com/GPBzZDj"],
-  "r": ["https://imgur.com/GPBzZDj"]
+  "rusa": [
+    "https://images.unsplash.com/photo-1546182990-dffeafbe841d",
+    "https://images.unsplash.com/photo-1501706362039-c6e80948f3d1"
+  ],
+  "jaga": ["https://images.unsplash.com/photo-1527980965255-d3b416303d12"],
+  "kucing": [
+    "https://images.unsplash.com/photo-1518791841217-8f162f1e1131",
+    "https://images.unsplash.com/photo-1595433562696-3f5f1b8f1f0e"
+  ],
+  "anjing": [
+    "https://images.unsplash.com/photo-1517849845537-4d257902454a",
+    "https://images.unsplash.com/photo-1507149833265-60c372daea22"
+  ],
+  "burung": ["https://images.unsplash.com/photo-1502082553048-f009c37129b9"]
 }
