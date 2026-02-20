@@ -55,28 +55,37 @@ client.on("messageCreate", async (message) => {
     const categoryNames = Object.keys(data);
 
     if (categoryNames.length === 0) {
-      return message.reply("Belum ada kategori yang tersedia!");
+      return message.reply("❌ Belum ada kategori di database!");
     }
 
-    let description = "";
+    let totalGambar = 0;
 
-    categoryNames.forEach((cat, index) => {
-      const jumlah = data[cat].length;
-      description += `**${index + 1}. !${cat}** ➜ ${jumlah} gambar\n`;
-    });
+    const listKategori = categoryNames
+      .map((cat, i) => {
+        const jumlah = data[cat].length;
+        totalGambar += jumlah;
+        return `**${i + 1}. ${cat.toUpperCase()}**\n🖼️ ${jumlah} Gambar | 🔎 !${cat}`;
+      })
+      .join("\n\n");
 
     const embed = new EmbedBuilder()
-      .setTitle("📂 DAFTAR KATEGORI GAMBAR")
-      .setDescription(description)
-      .addFields({
-        name: "📊 Total Kategori",
-        value: `${categoryNames.length} Kategori`,
-        inline: true,
-      })
+      .setTitle("📂 DAFTAR KATEGORI BOT")
+      .setDescription(listKategori)
+      .addFields(
+        {
+          name: "📊 Total Kategori",
+          value: `${categoryNames.length}`,
+          inline: true,
+        },
+        {
+          name: "🖼️ Total Semua Gambar",
+          value: `${totalGambar}`,
+          inline: true,
+        },
+      )
       .setColor(0x00aeff)
       .setFooter({
         text: `Diminta oleh ${message.author.username}`,
-        iconURL: message.author.displayAvatarURL(),
       })
       .setTimestamp();
 
